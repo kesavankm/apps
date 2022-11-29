@@ -117,7 +117,6 @@ func (c *ConnInfo) recordMetrics() {
 			time.Sleep(30 * time.Second)
 		}
 	}()
-	log.Printf("wow")
 	wg.Add(1)
 	go func() {
 		for {
@@ -141,9 +140,7 @@ func (c *ConnInfo) recordMetrics() {
 			time.Sleep(10 * time.Second)
 		}
 	}()
-	log.Printf("wow2")
 	wg.Wait()
-	log.Printf("wow3")
 }
 
 func (nc *NetConn) httpInstallMetricsRoutes() {

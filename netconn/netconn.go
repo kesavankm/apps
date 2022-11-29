@@ -55,8 +55,8 @@ func (nc *NetConn) httpGetHandler(w http.ResponseWriter, r *http.Request) {
 	if conn, ok := nc.conns[server]; ok {
 		// conn.dispStats()
 		stats := conn.getStats()
-		log.Printf("Stats: \n%+v\n", stats)
-		log.Printf("Conn: \n%+v\n", conn)
+		// log.Printf("Stats: \n%+v\n", stats)
+		// log.Printf("Conn: \n%+v\n", conn)
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(stats)
 		json.NewEncoder(w).Encode(conn)
@@ -80,8 +80,8 @@ func (nc *NetConn) httpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (nc *NetConn) httpStartServer() {
-	log.Printf("[startServer] Enter")
-	defer log.Printf("[startServer] Exit")
+	// log.Printf("[startServer] Enter")
+	// defer log.Printf("[startServer] Exit")
 	address := fmt.Sprintf(":%d", 12192)
 	err := http.ListenAndServe(address, nc.mux)
 	if err != nil {
@@ -98,7 +98,7 @@ func (nc *NetConn) httpStartListener() error {
 }
 
 func (c *ConnInfo) pingSetup() {
-	log.Printf("[pingSetup] c %+v", c)
+	// log.Printf("[pingSetup] c %+v", c)
 	var err error
 	c.pinger, err = ping.NewPinger(c.targetServer)
 	if err != nil {
@@ -117,7 +117,7 @@ func (c *ConnInfo) doPing() {
 }
 
 func (c *ConnInfo) startPing() {
-	log.Printf("Starting Ping service for %s\n", c.targetServer)
+	// log.Printf("Starting Ping service for %s\n", c.targetServer)
 	c.pingSetup()
 	c.active = true
 	go c.collectStats()
@@ -126,7 +126,7 @@ func (c *ConnInfo) startPing() {
 }
 
 func (c *ConnInfo) stopPing() {
-	log.Printf("Stopping Ping service for %s\n", c.targetServer)
+	// log.Printf("Stopping Ping service for %s\n", c.targetServer)
 	c.active = true
 	c.pinger.Stop()
 }
@@ -177,10 +177,9 @@ func run(nc *NetConn) {
 }
 
 func main() {
-	log.Printf("[main] Enter v0.0.16")
+	log.Printf("[main] Enter v0.0.17")
 	ctx := context.Background()
 	log.Printf("main")
 	n := NewNetConn(ctx)
 	run(n)
-	fmt.Printf("n: %+v\n", n)
 }
