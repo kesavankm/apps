@@ -42,13 +42,13 @@ func (nc *NetConn) doSpeedtest() {
 			s := targets[0]
 			s.PingTest()
 			s.DownloadTest(false)
-			s.UploadTest(false)
+			// s.UploadTest(false)
 
 			log.Printf("Count: %d, Host %s, Latency: %s, Download: %f, Upload: %f\n",
 				count, s.Host, s.Latency, s.DLSpeed, s.ULSpeed)
 			count++
 			downloadSpeedGg.Set(float64(s.DLSpeed))
-			uploadSpeedGg.Set(float64(s.ULSpeed))
+			// uploadSpeedGg.Set(float64(s.ULSpeed))
 			latencyGg.Set(float64(s.Latency))
 			time.Sleep(5 * time.Minute)
 		}

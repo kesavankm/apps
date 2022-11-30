@@ -177,7 +177,7 @@ func run(nc *NetConn) {
 }
 
 func main() {
-	log.Printf("[main] Enter v0.0.17")
+	log.Printf("[main] Enter v0.0.18")
 	ctx := context.Background()
 	log.Printf("main")
 	n := NewNetConn(ctx)
