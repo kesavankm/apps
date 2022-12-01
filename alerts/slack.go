@@ -2,6 +2,7 @@ package alerts
 
 import (
 	"context"
+	"log"
 
 	"github.com/slack-go/slack"
 )
@@ -28,6 +29,6 @@ func (c *SlackClient) PostMessage(channelID, message string) (err error) {
 	if err != nil {
 		panic(err)
 	}
-	// log.Printf("[Slack-PostMessage] Sent text message %s to Channel %s @ %s\n", message, rchannelID, ts)
+	log.Printf("[Slack-PostMessage] Sent text message %s to Channel %s @ %s\n", message, rchannelID, ts)
 	return nil
 }
