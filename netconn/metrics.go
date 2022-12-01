@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -32,7 +33,7 @@ func (nc *NetConn) httpTestConnLoss(w http.ResponseWriter, r *http.Request) {
 
 func (nc *NetConn) httpOutageCount(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[httpOutageCount] Enter v7")
-	nc.conns["google.com"].metrics.outageCountCtr.Inc()
+	nc.conns["google.com"].IncrementOutageAndReport()
 }
 
 func (nc *NetConn) httpNumbersHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,6 +90,12 @@ func (c *ConnInfo) NewConnMetrics() {
 	c.metrics = &m
 }
 
+func (c *ConnInfo) IncrementOutageAndReport() {
+	c.metrics.outageCountCtr.Inc()
+	alertChannel := "C04DXUUQ59N"
+	c.nc.alertClient.PostMessage(alertChannel, fmt.Sprintf("Outage observed @ %s", time.Now()))
+}
+
 func (c *ConnInfo) collectStats() {
 	go func() {
 		for {
@@ -101,12 +108,16 @@ func (c *ConnInfo) collectStats() {
 }
 
 func (c *ConnInfo) recordMetrics() {
+	// log.Printf("[recordMetrics] Enter. c %+v", c)
 	var wg sync.WaitGroup
 
 	m := c.metrics
 	wg.Add(1)
 	go func() {
 		for {
+			if c.pingerStats == nil {
+				continue
+			}
 			// totalLoss.Set(float64(c.totalLossCount))
 			if c.totalLossCount > 1 {
 				m.totalPacketLossGg.Set(float64(c.totalLossCount))
@@ -120,12 +131,15 @@ func (c *ConnInfo) recordMetrics() {
 	wg.Add(1)
 	go func() {
 		for {
+			if c.pingerStats == nil {
+				continue
+			}
 			if c.totalLossCount > c.prevLossCount+1 {
 				log.Printf("\n\n  LOSS: Diff: Stats %d,%d\n LossCt %d\n Conn %+v\n\n",
 					c.pingerStats.PacketsSent, c.pingerStats.PacketsRecv, c.totalLossCount, c)
 				if c.lossObserved == 0 {
 					// Mark as outage only if No loss is observed until now
-					m.outageCountCtr.Inc()
+					c.IncrementOutageAndReport()
 				}
 				c.lossObserved = 1
 				c.prevLossCount = c.totalLossCount

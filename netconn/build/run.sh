@@ -1,0 +1,1 @@
+ go build *.go &&  sudo -E setcap cap_net_raw=+ep ./metrics && ./metrics

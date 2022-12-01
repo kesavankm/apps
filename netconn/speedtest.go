@@ -39,6 +39,9 @@ func (nc *NetConn) doSpeedtest() {
 		for {
 			serverList, _ := speedtest.FetchServers(user)
 			targets, _ := serverList.FindServer([]int{})
+            if len(targets) == 0 {
+                continue
+            }
 			s := targets[0]
 			s.PingTest()
 			s.DownloadTest(false)

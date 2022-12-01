@@ -6,11 +6,16 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/go-ping/ping"
+
+	alerts "github.com/kesavankm/alerter"
 )
+
+var apiVersion string
 
 type connStats struct {
 	// PacketsSent
@@ -41,6 +46,8 @@ type NetConn struct {
 	targetServers []string
 	conns         map[string]*ConnInfo
 	pollFrequency int // in seconds
+	// alertClient   *alerts.SlackClient
+	alertClient alerts.AlertIntf
 }
 
 func (nc *NetConn) httpInstallRoutes() {
@@ -49,8 +56,6 @@ func (nc *NetConn) httpInstallRoutes() {
 }
 
 func (nc *NetConn) httpGetHandler(w http.ResponseWriter, r *http.Request) {
-	// log.Printf("Get. Req %+v\n", r)
-	// log.Printf("host %+v, URLPath %s, URl %+v\n\n", r.Host, r.URL.Path, r.URL)
 	server := strings.Split(r.URL.Path, "/")[1]
 	if conn, ok := nc.conns[server]; ok {
 		// conn.dispStats()
@@ -162,7 +167,15 @@ func (c *ConnInfo) SetParentNetConn(nc *NetConn) {
 }
 
 func NewNetConn(ctx context.Context) *NetConn {
-	return &NetConn{ctx: ctx}
+	var err error
+	nc := &NetConn{ctx: ctx}
+	// nc.alertClient, err = alerts.NewSlackClient(ctx, os.Getenv("SLACK_BOT_TOKEN"))
+	nc.alertClient, err = alerts.NewAlertClient(ctx, alerts.AlertConfig{ClientType: "slack", ApiToken: os.Getenv("SLACK_BOT_TOKEN")})
+	if err != nil {
+		panic(err)
+	}
+
+	return nc
 }
 
 func run(nc *NetConn) {
@@ -177,7 +190,8 @@ func run(nc *NetConn) {
 }
 
 func main() {
-	log.Printf("[main] Enter v0.0.18")
+	apiVersion = "0.0.23"
+	log.Printf("[main] Enter version %s\n", apiVersion)
 	ctx := context.Background()
 	log.Printf("main")
 	n := NewNetConn(ctx)
