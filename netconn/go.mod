@@ -8,7 +8,7 @@ require (
 	github.com/showwin/speedtest-go v1.3.0
 )
 
-require github.com/kesavankm/alerter v0.0.0-20221201181141-7a43804bd699
+require github.com/kesavankm/alerter v0.0.0-20221202025404-37711db5c501
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

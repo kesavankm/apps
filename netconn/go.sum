@@ -151,6 +151,8 @@ github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7V
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
 github.com/kesavankm/alerter v0.0.0-20221201181141-7a43804bd699 h1:73CBED8nJLBidANB6aPzPqDl22xMJD2PP54AMIRBHWU=
 github.com/kesavankm/alerter v0.0.0-20221201181141-7a43804bd699/go.mod h1:gbfxUuEuqsdIbK+bfBlJoKy+2VfMtOC87933clZ7Ios=
+github.com/kesavankm/alerter v0.0.0-20221202025404-37711db5c501 h1:0loRfoxbM0NfjUBKavQgnxUl/CgzKUdZq5KFjE58+uI=
+github.com/kesavankm/alerter v0.0.0-20221202025404-37711db5c501/go.mod h1:gbfxUuEuqsdIbK+bfBlJoKy+2VfMtOC87933clZ7Ios=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/konsorten/go-windows-terminal-sequences v1.0.3/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
