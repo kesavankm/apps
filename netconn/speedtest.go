@@ -39,9 +39,9 @@ func (nc *NetConn) doSpeedtest() {
 		for {
 			serverList, _ := speedtest.FetchServers(user)
 			targets, _ := serverList.FindServer([]int{})
-            if len(targets) == 0 {
-                continue
-            }
+			if len(targets) == 0 {
+				continue
+			}
 			s := targets[0]
 			s.PingTest()
 			s.DownloadTest(false)
@@ -52,8 +52,8 @@ func (nc *NetConn) doSpeedtest() {
 			count++
 			downloadSpeedGg.Set(float64(s.DLSpeed))
 			// uploadSpeedGg.Set(float64(s.ULSpeed))
-			latencyGg.Set(float64(s.Latency))
-			time.Sleep(5 * time.Minute)
+			//latencyGg.Set(float64(s.Latency))
+			time.Sleep(10 * time.Minute)
 		}
 	}()
 }
