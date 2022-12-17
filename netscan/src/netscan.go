@@ -121,7 +121,7 @@ func NewNetScan(ctx context.Context) *NetScan {
 	if err != nil {
 		panic(err)
 	}
-    ns.scanFrequency = 5 * time.Minute
+	ns.scanFrequency = 5 * time.Minute
 
 	ns.metrics = NewMetrics()
 
