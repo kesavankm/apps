@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  netconn:
+    image: kesavank7/app-netconn:latest
+    container_name: app-netconn
+    ports:
+      - "12192:10080"
+    restart: unless-stopped
