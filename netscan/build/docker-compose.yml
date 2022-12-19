@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  app:
-    image: eclairs/app-netscan:alpha
-    container_name: app-hw
+  netscan:
+    image: kesavank7/app-netscan:latest
+    container_name: app-netscan
     ports:
-      - "10080:8080"
+      - "12193:10080"
     restart: unless-stopped

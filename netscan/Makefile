@@ -24,7 +24,7 @@ IAM ?= $(shell whoami)
 
 BUILD_IMAGE ?= $(REGISTRY)/golang:1.17-alpine
 
-.PHONY: all build test clean push
+.PHONY: all build test clean push docker deploy
 
 $(BUILD_DIRS):
 	@mkdir -p $@
@@ -123,3 +123,8 @@ shell: $(BUILD_DIRS)
 	    --env HTTPS_PROXY=$(HTTPS_PROXY)                        \
 	    $(BUILD_IMAGE)                                          \
 	    /bin/sh $(CMD)
+
+# Deploy: make deploy to deploy the app as docker-compose
+deploy:
+deploy:
+	@docker-compose -f build/docker-compose.yml up

@@ -16,6 +16,7 @@ import (
 
 type NetScan struct {
 	ctx            context.Context
+	servicePort    int
 	mux            *http.ServeMux
 	targetNetworks []string
 	scanFrequency  time.Duration
@@ -99,7 +100,7 @@ func (ns *NetScan) httpInstallRoutes() {
 func (ns *NetScan) httpStartServer() {
 	// log.Printf("[startServer] Enter")
 	// defer log.Printf("[startServer] Exit")
-	address := fmt.Sprintf(":%d", 12193)
+	address := fmt.Sprintf(":%d", ns.servicePort)
 	err := http.ListenAndServe(address, ns.mux)
 	if err != nil {
 		log.Printf("[startServer]: err listening and serving http. Err %+v", err)
@@ -117,6 +118,7 @@ func (ns *NetScan) httpStartListener() error {
 func NewNetScan(ctx context.Context) *NetScan {
 	var err error
 	ns := &NetScan{ctx: ctx}
+	ns.servicePort = 10080
 	ns.alertClient, err = alerts.NewAlertClient(ctx, alerts.AlertConfig{ClientType: "slack", ApiToken: os.Getenv("SLACK_BOT_TOKEN")})
 	if err != nil {
 		panic(err)

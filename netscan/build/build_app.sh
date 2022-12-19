@@ -27,8 +27,4 @@ export GOFLAGS="-mod=mod"
 
 go mod tidy
 go fmt ./...
-# go build -o ./bin/app ./...
-go install                                                      \
-    -installsuffix "static"                                     \
-    -ldflags "-X $(go list -m)/pkg/version.Version=${VERSION}"  \
-    ./...
+go build -o ./bin/app ./src
