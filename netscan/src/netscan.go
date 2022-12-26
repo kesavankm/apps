@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Ullaakut/nmap"
+	"github.com/Ullaakut/nmap/v2"
 
 	alerts "github.com/kesavankm/alerter"
 )
@@ -24,15 +24,61 @@ type NetScan struct {
 	metrics        *metrics
 }
 
+type NetScanReport struct {
+	numActiveDevices int
+}
+
+func countByOS(result *nmap.Run) {
+	var (
+		noHostOS   int
+		noHostAddr int
+	)
+	// Count the number of each OS for all hosts.
+	for _, host := range result.Hosts {
+		if len(host.Addresses) == 0 {
+			noHostAddr++
+			// continue
+		}
+
+		if len(host.OS.Matches) == 0 {
+			noHostOS++
+			// continue
+		}
+		log.Printf("Host %s, Total matches %d\n", host.Addresses[0], len(host.OS.Matches))
+		var hostName string
+		if len(host.Hostnames) > 0 {
+			hostName = host.Hostnames[0].Name
+		}
+		var bestOSMatch, bestClassFamily, bestClassVendor string
+		var hostAccuracy int
+		if len(host.OS.Matches) > 0 {
+			hostAccuracy = host.OS.Matches[0].Accuracy
+			bestOSMatch = host.OS.Matches[0].Name
+			bestClassVendor = host.OS.Matches[0].Classes[0].Vendor
+			bestClassFamily = host.OS.Matches[0].Classes[0].Family
+		}
+		log.Printf("  Host %s, Acc: %d, OS: %s, Vendor: %s, OSFamily: %s\n\n",
+			hostName, hostAccuracy, bestOSMatch,
+			bestClassVendor, bestClassFamily)
+	}
+
+	fmt.Printf("Discovered hosts : up:%d(total:%d), noHostOSMatch:%d, noHostAddr:%d.\n",
+		result.Stats.Hosts.Up, result.Stats.Hosts.Total, noHostOS, noHostAddr)
+}
+
 func (ns *NetScan) scanAndReport() {
-	scan := func() int {
+	scan := func() NetScanReport {
+		log.Printf("Initiating scan")
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 
 		scanner, err := nmap.NewScanner(
 			nmap.WithTargets("192.168.86.0/24"),
-			nmap.WithPingScan(),
+			// nmap.WithPingScan(),
 			nmap.WithContext(ctx),
+			nmap.WithFastMode(),
+			nmap.WithOSDetection(),
+			nmap.WithOSScanLimit(),
 		)
 
 		if err != nil {
@@ -48,27 +94,18 @@ func (ns *NetScan) scanAndReport() {
 			log.Printf("Warnings: \n %v", warnings)
 		}
 
-		// // Use the results to print an example output
-		// for _, host := range result.Hosts {
-		// 	if len(host.Ports) == 0 || len(host.Addresses) == 0 {
-		// 		continue
-		// 	}
+		countByOS(result)
 
-		// 	fmt.Printf("Host %q:\n", host.Addresses[0])
-
-		// 	for _, port := range host.Ports {
-		// 		fmt.Printf("\tPort %d/%s %s %s\n", port.ID, port.Protocol, port.State, port.Service.Name)
-		// 	}
-		// }
 		fmt.Printf("Nmap done: %d hosts up scanned in %3f seconds\n", len(result.Hosts), result.Stats.Finished.Elapsed)
-		return len(result.Hosts)
+		return NetScanReport{numActiveDevices: len(result.Hosts)}
 	}
 
 	go func() {
 		for {
-			numDevices := scan()
-			ns.metrics.numActiveDevices.Set(float64(numDevices))
-			time.Sleep(5 * time.Minute)
+			nsReport := scan()
+			// ns.metrics.numActiveDevices.Set(float64(numDevices))
+			ns.metrics.PublishMetrics(nsReport)
+			time.Sleep(ns.scanFrequency)
 		}
 	}()
 }
@@ -142,7 +179,7 @@ func run(ns *NetScan) {
 }
 
 func main() {
-	apiVersion := "0.0.6"
+	apiVersion := "0.0.7i"
 	log.Printf("[main] Enter version %s\n", apiVersion)
 	ctx := context.Background()
 	log.Printf("main")

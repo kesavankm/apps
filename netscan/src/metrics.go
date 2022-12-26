@@ -10,6 +10,11 @@ type metrics struct {
 	numActiveDevices prometheus.Gauge
 }
 
+func (m *metrics) PublishMetrics(nsReport NetScanReport) error {
+	m.numActiveDevices.Set(float64(nsReport.numActiveDevices))
+	return nil
+}
+
 func NewMetrics() *metrics {
 	// Create a non-global registry.
 	reg := prometheus.NewRegistry()
@@ -19,18 +24,8 @@ func NewMetrics() *metrics {
 			Name: "ns_num_active_devices",
 			Help: "Number of active devices",
 		}),
-		// hdFailures: prometheus.NewCounterVec(
-		// 	prometheus.CounterOpts{
-		// 		Name: "hd_errors_total",
-		// 		Help: "Number of hard-disk errors.",
-		// 	},
-		// 	[]string{"device"},
-		// ),
 	}
 	reg.MustRegister(m.numActiveDevices)
-
-	// m.numActiveDevices.Set(123.4)
-	// reg.MustRegister(m.hdFailures)
 
 	m.registry = reg
 	return m

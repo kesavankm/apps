@@ -123,3 +123,12 @@ shell: $(BUILD_DIRS)
 	    --env HTTPS_PROXY=$(HTTPS_PROXY)                        \
 	    $(BUILD_IMAGE)                                          \
 	    /bin/sh $(CMD)
+
+.PHONY: docker-up
+docker-up:
+	docker compose -f build/docker-compose.yml up &
+
+.PHONY: docker-down
+docker-down:
+	docker compose -f build/docker-compose.yml down
+	docker system prune --volumes --force

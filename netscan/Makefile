@@ -124,7 +124,11 @@ shell: $(BUILD_DIRS)
 	    $(BUILD_IMAGE)                                          \
 	    /bin/sh $(CMD)
 
-# Deploy: make deploy to deploy the app as docker-compose
-deploy:
-deploy:
-	@docker-compose -f build/docker-compose.yml up
+.PHONY: docker-up
+docker-up:
+	docker compose -f build/docker-compose.yml up &
+
+.PHONY: docker-down
+docker-down:
+	docker compose -f build/docker-compose.yml down
+	docker system prune --volumes --force
