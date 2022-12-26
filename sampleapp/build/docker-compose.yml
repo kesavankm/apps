@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  sampleapp:
+    image: "kesavank7/app-sampleapp:latest"
+    container_name: "app-sampleapp"
+    ports:
+      - "12194:10080"
+    restart: unless-stopped
